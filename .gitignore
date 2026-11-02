@@ -7,3 +7,4 @@ wt/
 .env*
 !.env.example
 profile.yaml
+events/gemma4/data/

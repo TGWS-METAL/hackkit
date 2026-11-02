@@ -74,6 +74,21 @@ describe("parseSpec", () => {
     expect(() => parseSpec(SPEC.replace("kind: file_exists", "kind: nada"))).toThrow();
   });
 
+  it("lê milestones, submissions e trilha restrita a modelos", () => {
+    const s = parseSpec(
+      SPEC.replace(
+        "constraints:",
+        "milestones:\n  - { id: entry, at: 2026-11-25T23:59:00Z }\nsubmissions: { per_day: 1, final_selected: 2 }\nconstraints:",
+      ).replace("    prize_usd: 0\n", "    prize_usd: 0\n    prizes_usd: [3, 2, 1]\n    models: [m-small]\n"),
+    );
+    expect(s.milestones).toEqual([{ id: "entry", at: "2026-11-25T23:59:00Z" }]);
+    expect(s.submissions).toEqual({ per_day: 1, final_selected: 2 });
+    expect(s.tracks[0]!.prizes_usd).toEqual([3, 2, 1]);
+    expect(s.tracks[0]!.models).toEqual(["m-small"]);
+    expect(parseSpec(SPEC).milestones).toEqual([]);
+    expect(() => parseSpec(SPEC.replace("constraints:", "submissions: { per_day: 0, final_selected: 2 }\nconstraints:"))).toThrow();
+  });
+
   it("rejeita evaluation fora de judged | leaderboard", () => {
     expect(() => parseSpec(SPEC.replace("evaluation: judged", "evaluation: votos"))).toThrow();
   });

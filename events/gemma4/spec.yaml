@@ -1,0 +1,74 @@
+# Gemma 4 Developer Agent (Kaggle, placar). Fontes consultadas em 2026-11-02:
+#   overview  https://www.kaggle.com/competitions/gemma-4-developer-agent/overview
+#   timeline  https://www.kaggle.com/competitions/gemma-4-developer-agent/overview/timeline
+#   rules     https://www.kaggle.com/competitions/gemma-4-developer-agent/rules
+#   data      https://www.kaggle.com/competitions/gemma-4-developer-agent/data
+# Trechos de /rules marcados [busca] vieram do índice do buscador; a parte específica da página não renderizou.
+event: gemma4
+platform: kaggle
+evaluation: leaderboard
+deadline: 2026-12-02T23:59:00Z
+milestones:
+  - id: entry_deadline
+    at: 2026-11-25T23:59:00Z
+    source_quote: "November 25, 2026 - Entry Deadline. You must accept the competition rules before this date in order to compete."
+  - id: team_merger_deadline
+    at: 2026-11-25T23:59:00Z
+    source_quote: "November 25, 2026 - Team Merger Deadline. This is the last day participants may join or merge teams."
+  - id: final_submission_deadline
+    at: 2026-12-02T23:59:00Z
+    source_quote: "December 2, 2026 - Final Submission Deadline. ... All deadlines are at 11:59 PM UTC"
+  # O bloco do bônus cita 12/11 e também "Same submission deadlines apply as the main track prizes" (ambíguo na página).
+  - id: small_model_bonus_date_cited
+    at: 2026-11-12T23:59:00Z
+    source_quote: "Submissions must be made by November 12, 2026 at 11:59PM UTC."
+submissions:
+  per_day: 1
+  final_selected: 2
+  source_quote: "[busca] You may submit a maximum of one (1) Submission per day. ... up to two (2) Final Submissions for judging"
+constraints:
+  build_tool: null
+  # Um modelo por submissão, entre 31b, 12b, e4b e e2b (QAT w4a16); 31b é o padrão da seção 14 do plano.
+  runtime_model: gemma-4-31b-it-qat-w4a16-ct
+  required_sdks: []
+# target_score e budget_usd: valores provisórios, o gestor define.
+target_score: 100
+budget_usd: 0
+tracks:
+  - id: main
+    prizes_usd: [37000, 18000, 10000]
+    source_quote: "1st Place: $37,000 2nd Place: $18,000 3rd Place: $10,000"
+    est_competitors: null
+    criteria:
+      - id: resolution_rate
+        weight: 1
+        source_quote: "Your submission's overall score is the percentage of patched repositories that pass the validation tests."
+        verifiers:
+          - kind: command
+            run: node templates/agent-scaffold/dist/cli.js templates/agent-scaffold/submission -o templates/agent-scaffold/dist/submission.zip
+          - kind: leaderboard_local
+            harness: swegemma
+            tasks: events/gemma4/data/tasks.jsonl
+            snapshots: events/gemma4/data/snapshots
+            submission: templates/agent-scaffold/submission
+  - id: small_model_bonus
+    prize_usd: 10000
+    models: [gemma-4-e2b-it-qat-w4a16-ct, gemma-4-e4b-it-qat-w4a16-ct]
+    source_quote: "Bonus Prize: Small Model Development: $10,000. Submissions must explicitly use either Gemma E2B or Gemma E4B as the base model. ... it must be one of the team's two selected final submissions."
+    criteria:
+      - id: resolution_rate
+        weight: 1
+        verifiers:
+          - kind: leaderboard_local
+            harness: swegemma
+            tasks: events/gemma4/data/tasks.jsonl
+            snapshots: events/gemma4/data/snapshots
+            submission: templates/agent-scaffold/submission
+rules:
+  # Regra sobre IA para escrever código: não encontrada nas páginas oficiais.
+  ai_allowed: true
+  # Foundational 6(c): "you must only use open source code licensed under an Open Source Initiative-approved license"
+  preexisting_code: allowed
+  build_window: [2026-09-23, 2026-12-02]
+  # Foundational 1(a): idade "the older of 18 years old or the age of majority"; exclui Cuba, Iran, North Korea, Crimea, DNR, LNR.
+  eligibility: { countries_excluded: [CU, IR, KP], min_age: 18 }

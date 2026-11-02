@@ -43,21 +43,42 @@ export const criterionSchema = z.object({
   verifiers: z.array(verifierSchema).min(1),
 });
 
+// O parser YAML pode devolver Date para datas sem aspas.
+const dateText = z.union([z.string(), z.date()]).transform((v) => (v instanceof Date ? v.toISOString() : v));
+
 export const trackSchema = z.object({
   id: z.string().min(1),
   prize_usd: z.number().min(0).optional(),
+  /** Prêmio por colocação (1º, 2º, ...), quando o regulamento separa. */
+  prizes_usd: z.array(z.number().min(0)).optional(),
+  /** Trilha que só vale com um destes modelos (ex.: prêmio para modelo pequeno). */
+  models: z.array(z.string().min(1)).optional(),
+  source_quote: z.string().optional(),
   est_competitors: z.number().int().min(0).nullable().optional(),
   criteria: z.array(criterionSchema).min(1),
 });
 
-// O parser YAML pode devolver Date para datas sem aspas.
-const dateText = z.union([z.string(), z.date()]).transform((v) => (v instanceof Date ? v.toISOString() : v));
+// Datas intermediárias do regulamento (entrada, fusão de equipes, entrega final).
+export const milestoneSchema = z.object({
+  id: z.string().min(1),
+  at: dateText,
+  source_quote: z.string().optional(),
+});
+
+// Cota de submissão de eventos de placar.
+export const submissionsSchema = z.object({
+  per_day: z.number().int().min(1),
+  final_selected: z.number().int().min(1),
+  source_quote: z.string().optional(),
+});
 
 export const specSchema = z.object({
   event: z.string().min(1),
   platform: z.enum(["devpost", "kaggle", "ethglobal", "dorahacks"]),
   evaluation: z.enum(["judged", "leaderboard"]),
   deadline: dateText,
+  milestones: z.array(milestoneSchema).default([]),
+  submissions: submissionsSchema.optional(),
   constraints: z
     .object({
       build_tool: z.string().nullable().default(null),
