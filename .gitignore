@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.turbo/
+runs/
+wt/
+*.db
+.env*
+!.env.example
