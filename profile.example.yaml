@@ -1,0 +1,3 @@
+# Copie para profile.yaml (fora do git) e preencha. Lido por packages/rules-check.
+country: BR   # código ISO 3166-1 alfa-2
+age: 18

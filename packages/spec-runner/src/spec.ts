@@ -76,6 +76,8 @@ export const specSchema = z.object({
       eligibility: z
         .object({
           countries_excluded: z.array(z.string()).default([]),
+          // "Somente residentes de X" (seção 11): lista de países aceitos.
+          countries_allowed: z.array(z.string()).optional(),
           min_age: z.number().int().min(0).optional(),
         })
         .optional(),

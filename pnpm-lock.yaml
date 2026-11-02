@@ -181,6 +181,20 @@ importers:
 
   packages/ledger: {}
 
+  packages/orchestrator: {}
+
+  packages/rules-check:
+    dependencies:
+      '@hackkit/spec-runner':
+        specifier: workspace:*
+        version: link:../spec-runner
+      yaml:
+        specifier: 2.9.1
+        version: 2.9.1
+      zod:
+        specifier: 4.6.7
+        version: 4.6.7
+
   packages/spec-runner:
     dependencies:
       yaml:
@@ -189,6 +203,8 @@ importers:
       zod:
         specifier: 4.6.7
         version: 4.6.7
+
+  scripts/hooks: {}
 
 packages:
 

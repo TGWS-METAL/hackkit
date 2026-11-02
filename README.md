@@ -17,6 +17,7 @@ pnpm test
 |---|---|
 | `packages/spec-runner` | lê `spec.yaml`, roda os verificadores `command`, `file_exists` e `e2e`, devolve nota por critério, total ponderado 0–100 e lacunas abaixo de 0,85 |
 | `packages/orchestrator` | interface `Runner` e o runner `cli` (`claude -p` por tarefa, saída em `runs/<evento>/<tarefa>.jsonl`) |
+| `packages/rules-check` | lê `spec.yaml` + `profile.yaml` e devolve verde/vermelho por item (país, idade, `ai_allowed`, `preexisting_code`, `build_window`, `build_tool`, `runtime_model`); item vermelho = exit 1 |
 | `packages/ledger` | SQLite (`node:sqlite`) com a tabela `participations` |
 | `scripts/hooks` | hooks do Claude Code: `post-edit.sh`, `guard-bash.sh`, `on-stop.sh` |
 

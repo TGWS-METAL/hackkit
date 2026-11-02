@@ -6,3 +6,4 @@ wt/
 *.db
 .env*
 !.env.example
+profile.yaml
